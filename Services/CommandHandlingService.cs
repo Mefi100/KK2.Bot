@@ -1,12 +1,7 @@
-﻿using System;
-using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
+﻿using System.Reflection;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
-using Newtonsoft.Json;
 
 namespace KK2.Bot.Services
 {
@@ -15,7 +10,6 @@ namespace KK2.Bot.Services
         private readonly CommandService _commands;
         private readonly DiscordSocketClient _discord;
         private readonly IServiceProvider _services;
-        private const string BotChannel = "discord-bot-pub";
 
         public CommandHandlingService(IServiceProvider services)
         {
@@ -70,12 +64,6 @@ namespace KK2.Bot.Services
 
             // the command failed, let's notify the user that something happened.
             await context.Channel.SendMessageAsync($"error: {result}");
-        }
-
-        private async Task MessageAction(string message)
-        {
-            DiscordMessage messageData = JsonConvert.DeserializeObject<DiscordMessage>(message);
-            await (_discord.GetChannel(messageData.DiscordChannelId) as IMessageChannel).SendMessageAsync(messageData.Message);
         }
     }
 }
