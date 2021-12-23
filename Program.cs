@@ -23,6 +23,7 @@ namespace KK2.Bot
         public async Task MainAsync(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddHealthChecks();
 
             // Add services to the container.
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -30,6 +31,7 @@ namespace KK2.Bot
             builder.Services.AddSwaggerGen();
 
             var app = builder.Build();
+            app.MapHealthChecks("/health");
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
@@ -61,15 +63,15 @@ namespace KK2.Bot
             // Here we initialize the logic required to register our commands.
             await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
 
-            app.MapGet("/message/server/{msg}", (string msg) =>
+            app.MapPost("/message/server", async (string msg) =>
             {
-                _ = (client.GetChannel(botServerChannel) as IMessageChannel).SendMessageAsync(msg);
+                await (client.GetChannel(botServerChannel) as IMessageChannel).SendMessageAsync(msg);
                 return Results.Ok();
             });
 
-            app.MapGet("/message/game/{msg}", (string msg) =>
+            app.MapPost("/message/game", async (string msg) =>
             {
-                _ = (client.GetChannel(botGameChannel) as IMessageChannel).SendMessageAsync(msg);
+                await (client.GetChannel(botGameChannel) as IMessageChannel).SendMessageAsync(msg);
                 return Results.Ok();
             });
 
