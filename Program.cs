@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
 using KK2.Bot.Services;
+using Microsoft.AspNetCore.Mvc;
 
 namespace KK2.Bot
 {
@@ -63,13 +64,14 @@ namespace KK2.Bot
             // Here we initialize the logic required to register our commands.
             await services.GetRequiredService<CommandHandlingService>().InitializeAsync();
 
-            app.MapPost("/message/server", async (string msg) =>
+            app.MapPost("/message/server", async ([FromBody] string msg) =>
             {
+                Console.WriteLine("message "+msg);
                 await (client.GetChannel(botServerChannel) as IMessageChannel).SendMessageAsync(msg);
                 return Results.Ok();
             });
 
-            app.MapPost("/message/game", async (string msg) =>
+            app.MapPost("/message/game", async ([FromBody] string msg) =>
             {
                 await (client.GetChannel(botGameChannel) as IMessageChannel).SendMessageAsync(msg);
                 return Results.Ok();
